@@ -240,6 +240,6 @@ def withdraw(user_feedback, user_details,date,times_withdrawn):
         print(f'Invalid input..Please try again using W for Withdraw or C for Check balance ')
         result['wc_invalid_input'] = True
     
-    return result   
+    return result  
 
 
