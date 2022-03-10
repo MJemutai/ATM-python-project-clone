@@ -21,3 +21,4 @@ Write a program that would mimic the operations of an ATM machine.
 4. Go ahead and add any additional features you would want to add as well, make the program intuitive also (The user should know exactly what to do to get some form of response)
 
 5. Finally make the program self-executing. (Research how to make the code execute/ self-running, more or less like the shebang used in designing bash scripts to make it execute)
+   # Python is an interpreted not a compiled language, so you do not use it to make executables.

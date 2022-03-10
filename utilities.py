@@ -4,10 +4,6 @@ from users import users_data
 from pprint import pprint
 
 
-# collect input on whether a user 
-# def x():
-
-
 
 # collect the username, pin
 def collect_user_input():
@@ -19,7 +15,7 @@ def collect_user_input():
     username = input('What is your username? >>> ')
 
     for user in users_data:
-        cleaned_username = username.capitalize()
+        cleaned_username = username.capitalize()  #to automatically capture the username correctly
 
         if cleaned_username == user['username']:
             print(f'Welcome back {cleaned_username}!')
@@ -37,8 +33,7 @@ def collect_user_input():
 def login_user(username, pin):
     """
     This func takes in a username and a pin and returns userdata if credentials
-    are correct. If the credentials are wrong, the return obj will have user set to None
-    and wrong_pin set to True
+    are correct.
     """
 
     temp = {
@@ -65,7 +60,7 @@ def login_user(username, pin):
 def withdraw_money(amount_to_withdraw,user_details):
         remainder = user_details['balance'] - amount_to_withdraw
         
-        if remainder < 0:
+        if remainder < 0: #user withdrawing more than they have
             print (
                 f'''
                      You do not have sufficient balance to continue with this transaction...
@@ -75,17 +70,18 @@ def withdraw_money(amount_to_withdraw,user_details):
             return user_details['balance']
         else:
             # logged_in_user_details['balance'] = remainder 
-            print(f'Successfully withdrawn Ksh {amount_to_withdraw}. Your balance is now Ksh {remainder}')
+            print(f'Successfully withdrawn Ksh {amount_to_withdraw}.')
             return remainder
 
 #RECEIPTS FUNCTIONS
-def receipt_w(date, user_details):
+def receipt_w(date, user_details):   #withdrawal receipt
     res = {'receipt_error': False}
     slip = input("Enter Y for a receipt and N for no receipt: ")
     if (slip.upper() == 'Y'):
         print(f"""
         LAMBDA INVESTMENT BANK             {date}
             TRANSACTION TYPE: WITHDRAWAL
+            TRANSACTION FEE: Ksh.50
             BALANCE: Ksh.{user_details['balance']}
         
                 THANK YOU""") 
@@ -94,10 +90,10 @@ def receipt_w(date, user_details):
         print('Thank you for banking with us. Have a good Day 😊')
     else:
         print("Invalid input.") 
-        res['receipt_error'] = True 
+        res['receipt_error'] = True  #Incase a wrong character is entered
     return res
 
-def receipt_c(date, user_details):
+def receipt_c(date, user_details):   #check balance receipt
     res = {'receipt_error': False}
     slip = input("Enter Y for a receipt and N for no receipt: ")
     if (slip.upper() == 'Y'):
@@ -112,16 +108,17 @@ def receipt_c(date, user_details):
         print('Thank you for banking with us. Have a good Day 😊')
     else:
         print("Invalid input.") 
-        res['receipt_error'] = True 
+        res['receipt_error'] = True   #Incase a wrong character is entered
     return res
 
-def receipt_cw(date, user_details):
+def receipt_cw(date, user_details):   #check balance and withdrawal receipt
     res = {'receipt_error': False}
     slip = input("Enter Y for a receipt and N for no receipt: ")
     if (slip.upper() == 'Y'):
         print(f"""
         LAMBDA INVESTMENT BANK           {date}
             TRANSACTION TYPE: BALANCE CHECK AND WITHDRAWAL 
+            TRANSACTION COST: Ksh.50
                 BALANCE: Ksh.{user_details['balance']}
                     
                     THANK YOU""") 
@@ -130,11 +127,11 @@ def receipt_cw(date, user_details):
         print('Thank you for banking with us. Have a good Day 😊')
     else:
         print("Invalid input.") 
-        res['receipt_error'] = True 
+        res['receipt_error'] = True   #Incase a wrong character is entered
     return res
 
 
-
+#CHECK BALANCE FUNCTION
 def check_balance(user_details):
         try:
             print(f"Your current balance is Ksh {user_details['balance']}")
@@ -142,8 +139,9 @@ def check_balance(user_details):
         except:
             print('Something went wrong...')
 
-#WITHDRAWAL OR CHECK BALANCE FUNCTION
+#WITHDRAWAL FUNCTION
 def withdraw(user_feedback, user_details,date,times_withdrawn):
+    fee = 50
     result = {'user_details':user_details,
                'wc_invalid_input': False,
                 'yn_invalid_input': False}
@@ -152,8 +150,8 @@ def withdraw(user_feedback, user_details,date,times_withdrawn):
         how_much = int(input('How much? >>> '))
         
         balance = withdraw_money(how_much, user_details)
-        result['user_details']['balance'] = balance
-        times_withdrawn += 1
+        result['user_details']['balance'] = balance - fee
+        times_withdrawn += 1 
 
         x = input('Withdraw again? (Y/N) >>> ')
 
@@ -169,7 +167,7 @@ def withdraw(user_feedback, user_details,date,times_withdrawn):
                     print("Sorry we cannot complete your request. Good bye.")
         else:
             withdraw_again = False
-            result['yn_invalid_input'] = True
+            # result['yn_invalid_input'] = True
               
 
 
@@ -187,14 +185,14 @@ def withdraw(user_feedback, user_details,date,times_withdrawn):
 
     elif user_feedback.upper() == 'C':
             # show them the balance
-        check_balance(user_details)
+        check_balance(user_details)   #calling the check balance function
 
         response = input('Do you want to withdraw some money? (Y/N) >>> ')
         if response.upper() == 'Y':
                 # withdraw some money
             how_much = int(input('How much? >>> '))
             balance = withdraw_money(how_much, user_details)
-            result['user_details']['balance'] = balance
+            result['user_details']['balance'] = balance - fee
             times_withdrawn += 1
 
             x = input('Withdraw again? (Y/N) >>> ')
@@ -204,8 +202,8 @@ def withdraw(user_feedback, user_details,date,times_withdrawn):
             elif (x.upper() == 'N'):
                 withdraw_again = False
                 first_chance = receipt_cw(date, user_details)
-                if first_chance['receipt_error'] == True: ####
-                    last_chance = receipt_w(date, user_details)
+                if first_chance['receipt_error'] == True:
+                    last_chance = receipt_cw(date, user_details)
                     if last_chance['receipt_error'] == True:
                         print("Sorry we cannot complete your request. Good bye.")
                 
@@ -218,12 +216,12 @@ def withdraw(user_feedback, user_details,date,times_withdrawn):
                 balance = withdraw_money(how_much, user_details)
                 result['user_details']['balance'] = balance
                 first_chance = receipt_cw(date, user_details)
-                if first_chance['receipt_error'] == True:  ###
+                if first_chance['receipt_error'] == True:  
                     last_chance = receipt_cw(date, user_details)
                     if last_chance['receipt_error'] == True:
                         print("Sorry we cannot complete your request. Good bye.")
 
-        elif response.upper() == 'N':   ####
+        elif response.upper() == 'N':   
             first_chance = receipt_c(date, user_details)
             
             if first_chance['receipt_error'] == True:
@@ -236,8 +234,9 @@ def withdraw(user_feedback, user_details,date,times_withdrawn):
             print('Invalid input')
             print("Try again")
             result['yn_invalid_input'] = True
+        
     else:
-        print(f'Invalid input..Please try again using W for Withdraw or C for Check balance ')
+         ####
         result['wc_invalid_input'] = True
     
     return result  

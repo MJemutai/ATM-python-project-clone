@@ -1,1 +1,1 @@
-print
+print('Enter W to Withdraw and C to Check Balance') 

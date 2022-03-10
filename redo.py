@@ -3,11 +3,11 @@ import pprint
 from getpass import getpass
 from sys import exit
 
-#DATE AND TIME
+#DATE AND TIME PROGRAM
 from datetime import datetime
 now = datetime.now()
 today = (now.strftime("%Y-%m-%d %H:%M:%S"))
-# print(today)
+
 
 logged_in = False
 logged_in_user_details = None
@@ -22,11 +22,11 @@ print('Welcome to Lambda Investment Bank')
 user_input = collect_user_input()
 
 if user_input is None:
-    # we do not need to log them in
+    # we do not need to log them in when wrong username is entered
     print(
 '''
         Sorry we did not find an account with the given credentials. 
-        Please visit a nearby branch to open an account.
+        Please visit your nearest branch to open an account.
 '''
 )
 
@@ -42,7 +42,7 @@ else:
         tries = 0
 
         while tries < retries_limit:
-            # ask them to enter their credentials again
+            # ask them to enter their credentials again, two more tries to get the pin right
             pin = getpass('Enter your pin: ')
             res = login_user(user_input['username'], pin)
 
@@ -68,7 +68,7 @@ else:
                 
                 break
                 
-    else:
+    else: #correct pin at first try
         print("Succesful login")
         logged_in = True
         logged_in_user_details = user['details']
@@ -76,12 +76,14 @@ else:
     
     
 
-# withdraw money
-    print('Enter W to Withdraw and C to Check Balance')
+# withdraw money or check balance
+    print('Enter W to Withdraw or C to Check Balance')
     withdraw_or_check_balance = input('Do you want to withdraw some money or check your balance? (W/C) >>> ')
     
     transaction_attempt = withdraw(withdraw_or_check_balance, logged_in_user_details,today,times_withdrawn)
     logged_in_user_details = transaction_attempt['user_details']
+
+    # transact = withdraw(logged_in_user_details,today,times_withdrawn)  ##
     
 
     if transaction_attempt['wc_invalid_input'] ==True:
@@ -89,7 +91,7 @@ else:
         w_and_c_tries = 0
         
         while w_and_c_tries < w_and_c_tries_limit:
-            print('Enter W to Withdraw and C to Check Balance') 
+            print('Invalid input please enter W to Withdraw and C to Check Balance') 
             withdraw_or_check_balance = input('Do you want to withdraw some money or check your balance? (W/C) >>> ')
 
             withdraw(withdraw_or_check_balance, logged_in_user_details,today,times_withdrawn)
@@ -100,7 +102,7 @@ else:
                 print("You have exhausted your attempts. Try again in 24 hours.")
                 break
 
-    if transaction_attempt['yn_invalid_input'] ==True:
+    if transaction_attempt['yn_invalid_input'] ==True: ###
         y_and_n_tries_limit = 2
         y_and_n_tries = 0
         
